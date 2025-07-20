@@ -1,23 +1,29 @@
-import { useEffect } from "react";
-import "./App.css";
+import { useQuery } from "@tanstack/react-query";
+import { client } from "./shared/api/client";
 
 function App() {
-  useEffect(() => {
-    (async function () {
-      const response = await fetch(
-        "https://musicfun.it-incubator.app/api/1.0/playlists",
-        {
-          headers: {
-            "api-key": import.meta.env.VITE_API_KEY,
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-    })();
-  }, []);
-
-  return <></>;
+  return (
+    <>
+      <Playlists />
+    </>
+  );
 }
+
+const Playlists = () => {
+  const query = useQuery({
+    staleTime: 10000,
+    queryKey: ["playlists"],
+    queryFn: () => client.GET("/playlists"),
+  });
+  return (
+    <div>
+      <ul>
+        {query.data?.data?.data.map((playlist) => (
+          <li>{playlist.attributes.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default App;
