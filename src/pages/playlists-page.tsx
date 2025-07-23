@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { client } from "./shared/api/client";
+import { client } from "../shared/api/client";
 
 function App() {
   return (
