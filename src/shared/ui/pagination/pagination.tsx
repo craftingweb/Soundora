@@ -2,26 +2,27 @@ import { PaginationNav } from "./pagination-nav/pagination-nav.tsx";
 import s from "./Pagination.module.css";
 
 type Props = {
-  current: number;
+  currentPage: number;
   pagesCount: number;
-  changePageNumber: (page: number) => void;
+  onPageNumberChange: (page: number) => void;
   isFetching: boolean;
 };
 
 export const Pagination = ({
-  current,
+  currentPage,
   pagesCount,
-  changePageNumber,
+  onPageNumberChange,
   isFetching,
 }: Props) => {
   return (
     <div className={s.container}>
       <PaginationNav
-        current={current}
+        current={currentPage}
         pagesCount={pagesCount}
-        onChange={changePageNumber}
-      />{" "}
-      {isFetching && "⌛️"}
+        onChange={onPageNumberChange}
+        isFetching={isFetching}
+      />
+      {isFetching && "X"}
     </div>
   );
 };

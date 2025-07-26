@@ -1,10 +1,11 @@
 import s from "./pagination-nav.module.css";
-import { getPaginationPages } from "../utils/get-pagination-pages.ts";
+import { getPaginationPages } from "../utils/get-pagination-pages";
 
 type Props = {
   current: number;
   pagesCount: number;
   onChange: (page: number) => void;
+  isFetching: boolean;
 };
 
 const SIBLING_COUNT = 1;
