@@ -2,7 +2,7 @@ import createClient from "openapi-fetch";
 import type { paths } from "./schema";
 
 const authMiddleware: Middleware = {
-  async onRequest({ request, options }) {
+  onRequest({ request }) {
     const accessToken = localStorage.getItem("musicfun-access-token");
 
     if (accessToken) {
@@ -10,6 +10,14 @@ const authMiddleware: Middleware = {
     }
 
     return request;
+  },
+  onResponse({ response }) {
+    if (!response.ok) {
+      // Will produce error messages like "https://example.org/api/v1/example: 404 Not Found".
+      throw new Error(
+        `${response.url}: ${response.status} ${response.statusText}`
+      );
+    }
   },
 };
 
