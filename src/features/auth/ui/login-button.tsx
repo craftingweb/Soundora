@@ -3,12 +3,13 @@ import { client } from "../../../shared/api/client";
 import { useEffect } from "react";
 
 export const LoginButton = () => {
+  const callbackUrl = "http://localhost:5173/oauth/callback";
   const mutation = useMutation({
     mutationFn: async ({ code }: { code: string }) => {
       const response = await client.POST("/auth/login", {
         body: {
           code: code,
-          redirectUri: "???",
+          redirectUri: callbackUrl,
           rememberMe: true,
           accessTokenTTL: "1d",
         },
@@ -18,9 +19,13 @@ export const LoginButton = () => {
       }
       return response.data;
     },
+    onSuccess: (data: { refreshToken: string; accessToken: string }) => {
+      localStorage.setItem("musicfun-refresh-token", data.refreshToken);
+      localStorage.setItem("musicfun-access-token", data.accessToken);
+    },
   });
   const handleLoginClick = () => {
-    const callbackUrl = "http://localhost:5173/oauth/callback";
+    window.addEventListener("message", handleOathMessage);
 
     window.open(
       `https://musicfun.it-incubator.app/api/1.0/auth/oauth-redirect?callbackUrl=${callbackUrl}`,
@@ -31,6 +36,7 @@ export const LoginButton = () => {
   };
 
   const handleOathMessage = (event: MessageEvent) => {
+    window.removeEventListener("message", handleOathMessage);
     if (event.origin !== document.location.origin) {
       console.warn("no match");
       return;
@@ -42,13 +48,6 @@ export const LoginButton = () => {
     }
     mutation.mutate({ code });
   };
-
-  useEffect(() => {
-    window.addEventListener("message", handleOathMessage);
-    return () => {
-      window.removeEventListener("message", handleOathMessage);
-    };
-  }, []);
 
   return <button onClick={handleLoginClick}>Login with ApiHUB</button>;
 };
