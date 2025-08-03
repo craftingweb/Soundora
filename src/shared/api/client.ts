@@ -16,6 +16,7 @@ function makeRefreshToken() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "API-KEY": import.meta.env.VITE_API_KEY,
         },
         body: JSON.stringify({
           refreshToken: refreshToken,
@@ -37,6 +38,8 @@ function makeRefreshToken() {
   refreshPromise.finally(() => {
     refreshPromise = null;
   });
+
+  return refreshPromise;
 }
 
 const authMiddleware: Middleware = {
@@ -47,14 +50,33 @@ const authMiddleware: Middleware = {
       request.headers.set("Authorization", "Bearer " + accessToken);
     }
 
+    request._retryRequest = request.clone();
+
     return request;
   },
-  onResponse({ response }) {
+  async onResponse({ request, response }) {
     if (response.ok) return response;
     if (!response.ok && response.status !== 401) {
       throw new Error(
         `${response.url}: ${response.status} ${response.statusText}`
       );
+    }
+    try {
+      await makeRefreshToken();
+
+      const originalRequest: Request = request._retryRequest;
+      const retryRequest = new Request(originalRequest, {
+        headers: new Headers(originalRequest.headers),
+      });
+
+      retryRequest.headers.set(
+        "Authorization",
+        "Bearer " + localStorage.getItem("musicfun-access-token")
+      );
+
+      return fetch(retryRequest);
+    } catch {
+      return response;
     }
   },
 };
