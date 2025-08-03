@@ -9,6 +9,7 @@ export const useMeQuery = () => {
       const clientResponse = await client.GET("/auth/me");
       return clientResponse.data;
     },
+    retry: false,
   });
   return query;
 };

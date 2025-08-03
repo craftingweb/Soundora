@@ -5,6 +5,8 @@ import { useMeQuery } from "../api/use-me-query.tsx";
 export const AccountBar = () => {
   const query = useMeQuery();
 
+  if (query.isPending) return <span></span>;
+
   return (
     <div>
       {/* Show LoginButton if no user data is returned */}
