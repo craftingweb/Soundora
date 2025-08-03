@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import styles from "../account-bar.module.css";
 
 import { useMeQuery } from "../../api/use-me-query.tsx";
+import { LogoutButton } from "../logout-button.tsx";
 
 export const CurrentUser = () => {
   // Use the query to fetch current user data
@@ -14,6 +15,7 @@ export const CurrentUser = () => {
       {query.data && (
         <Link to="/my-playlists" activeOptions={{ exact: true }}>
           {query.data!.login}
+          <LogoutButton />
         </Link>
       )}
     </div>
