@@ -3,18 +3,23 @@ import { client } from "../shared/api/client";
 import { Pagination } from "../shared/ui/pagination/pagination";
 import { useState } from "react";
 
-export const Playlists = () => {
+type Props = {
+  userId?: string;
+};
+
+export const Playlists = ({ userId }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const query = useQuery({
     staleTime: 10000,
-    queryKey: ["playlists", { page, search }],
+    queryKey: ["playlists", { page, search, userId }],
     queryFn: async () => {
       const response = await client.GET("/playlists", {
         params: {
           query: {
             pageNumber: page,
             search,
+            userId,
           },
         },
       });
