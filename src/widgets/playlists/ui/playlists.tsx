@@ -1,7 +1,8 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { client } from "../shared/api/client";
-import { Pagination } from "../shared/ui/pagination/pagination";
+
 import { useState } from "react";
+import { client } from "../../../shared/api/client";
+import { Pagination } from "../../../shared/ui/pagination/pagination";
 
 type Props = {
   userId?: string;
