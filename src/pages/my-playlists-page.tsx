@@ -15,7 +15,6 @@ export function MyPlaylistsPage() {
       <hr />
       <AddPlaylistForm />
       <hr />
-
       <Playlists userId={data?.userId} />
     </>
   );
