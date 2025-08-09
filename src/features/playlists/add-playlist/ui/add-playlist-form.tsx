@@ -17,6 +17,7 @@ export const AddPlaylistForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["playlists"],
+        refetchType: "all",
       });
     },
   });
