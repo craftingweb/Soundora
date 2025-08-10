@@ -7,9 +7,10 @@ import { DeletePlaylist } from "../../../features/playlists/delete-playlist/ui/d
 
 type Props = {
   userId?: string;
+  onPlaylistSelected?: (playListId: string) => void;
 };
 
-export const Playlists = ({ userId }: Props) => {
+export const Playlists = ({ userId, onPlaylistSelected }: Props) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const query = useQuery({
@@ -31,6 +32,11 @@ export const Playlists = ({ userId }: Props) => {
   });
   console.log("status", query.status);
   console.log("fetchStatus", query.fetchStatus);
+
+  const handleSelectPlaylistClick = (playlistId: string) => {
+    onPlaylistSelected?.(playlistId);
+  };
+
   if (query.status === "pending") return <p>Loading ...</p>;
   return (
     <div>
@@ -50,7 +56,10 @@ export const Playlists = ({ userId }: Props) => {
 
       <ul>
         {query.data?.data.map((playlist) => (
-          <li key={playlist.id}>
+          <li
+            key={playlist.id}
+            onClick={() => handleSelectPlaylistClick(playlist.id)}
+          >
             {playlist.attributes.title}
             <DeletePlaylist playlistId={playlist.id} />
           </li>
