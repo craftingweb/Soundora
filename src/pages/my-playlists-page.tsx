@@ -23,9 +23,8 @@ export function MyPlaylistsPage() {
         onPlaylistSelected={setEditingPlaylist}
       />
       <hr />
-      {editingPlaylist && (
-        <EditPlaylistForm key={editingPlaylist} playlistId={editingPlaylist} />
-      )}
+
+      <EditPlaylistForm playlistId={editingPlaylist} />
     </>
   );
 }

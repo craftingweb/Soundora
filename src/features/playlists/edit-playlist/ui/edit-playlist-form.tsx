@@ -2,30 +2,36 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { SchemaUpdatePlaylistRequestPayload } from "../../../../shared/api/schema.ts";
 import { client } from "../../../../shared/api/client.ts";
+import { useEffect } from "react";
 
 type Props = {
-  playlistId: string;
+  playlistId: string | null;
 };
 
 export const EditPlaylistForm = ({ playlistId }: Props) => {
-  const { register, handleSubmit } =
+  const { register, handleSubmit, reset } =
     useForm<SchemaUpdatePlaylistRequestPayload>();
+
+  useEffect(() => {
+    reset();
+  }, [playlistId]);
 
   const { data, isPending, isError } = useQuery<string | null>({
     queryKey: ["playlists", playlistId],
     queryFn: async () => {
       const response = await client.GET(`/playlists/{playlistId}`, {
-        params: { path: { playlistId } },
+        params: { path: { playlistId: playlistId! } },
       });
       return response.data!;
     },
+    enabled: !!playlistId,
   });
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: async (data: SchemaUpdatePlaylistRequestPayload) => {
       const response = await client.PUT(`/playlists/{playlistId}`, {
-        params: { path: { playlistId } },
+        params: { path: { playlistId: playlistId! } },
         body: { ...data, tagIds: [] },
       });
       return response.data;
@@ -42,6 +48,7 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
     mutate(data);
   };
 
+  if (!playlistId) return <></>;
   if (isPending) return <div>Loading...</div>;
   if (isError) return <div>Error...</div>;
 
