@@ -36,12 +36,30 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
       });
       return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["playlists"],
-        refetchType: "all",
-      });
-    },
+
+  onMutate: async (newTodo) => {
+    // Cancel any outgoing refetches
+    // (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries({ queryKey: ['playlists'] })
+
+    // Snapshot the previous value
+    const previousTodos = queryClient.getQueryData(['playlists', playlistId])
+
+    // Optimistically update to the new value
+    queryClient.setQueryData(['todos', playlistsId],newTodo)
+
+    // Return a context object with the snapshotted value
+    return { previousTodos }
+  },
+  // If the mutation fails,
+  // use the context returned from onMutate to roll back
+  onError: (err, newTodo, context) => {
+    queryClient.setQueryData(['todos'], context.previousTodos)
+  },
+  // Always refetch after error or success:
+  onSettled: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
+})
+
   });
 
   const onSubmit = (data: SchemaUpdatePlaylistRequestPayload) => {
